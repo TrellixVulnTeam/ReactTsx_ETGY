@@ -1,0 +1,55 @@
+
+import path from "path";
+import { Configuration, DefinePlugin } from "webpack";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+// import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+
+module.exports = {
+  entry: "./src/App.tsx",
+  resolve: {
+    // extensions: [".ts", ".tsx", ".js"],
+    extensions: [".ts", ".tsx", ".js",".css",'.scss',],
+    plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })],
+  },
+  output: {
+    path: path.join(__dirname, "/build"),
+    filename: "build.js",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        options: {
+          transpileOnly: true,
+        },
+        exclude: /build/,
+      },
+      {
+        test: /\.s?css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.scss$/,
+        use: ["style-loader","css-modules-typescript-loader", "css-loader","sass-loader"],
+      },
+    ],
+  },
+  devServer:{
+    hot:true,
+    inline:true,
+    open:true,
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      // HtmlWebpackPlugin simplifies creation of HTML files to serve your webpack bundles
+      title:'等等等等',
+      template: "./public/index.html",
+    }),
+    // DefinePlugin allows you to create global constants which can be configured at compile time
+    new DefinePlugin({
+      "process.env": process.env.production || !process.env.development,
+    }),
+  ],
+}
